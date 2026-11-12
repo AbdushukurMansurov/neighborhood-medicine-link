@@ -9,9 +9,9 @@ const CITY_UZ: Record<string, string> = { Tashkent: "Toshkent", Samarkand: "Sama
 export const Route = createFileRoute("/pharmacies")({
   head: () => ({
     meta: [
-      { title: "Dorixonalar — Shifo" },
+      { title: "Dorixonalar — Averuna" },
       { name: "description", content: "Dorixonalar manzili, telefoni va DTSJ hamkorlik holati — bepul dorilarni qayerdan olishni bilib oling." },
-      { property: "og:title", content: "Dorixonalar — Shifo" },
+      { property: "og:title", content: "Dorixonalar — Averuna" },
       { property: "og:description", content: "Dorixonalar manzili, telefoni va DTSJ hamkorlik holati — bepul dorilarni qayerdan olishni bilib oling." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

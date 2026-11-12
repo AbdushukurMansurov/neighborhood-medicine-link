@@ -84,20 +84,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Shifo — E-retsept, bepul dorilar va dorixonalar" },
+      { title: "Averuna — E-retsept, bepul dorilar va dorixonalar" },
       { name: "description", content: "Bemor, shifokor va farmatsevt uchun elektron retsept va davlat hisobidan bepul dorilar." },
-      { property: "og:title", content: "Shifo — E-retsept va bepul dorilar" },
+      { property: "og:title", content: "Averuna — E-retsept va bepul dorilar" },
       { property: "og:description", content: "Bemor, shifokor va farmatsevt uchun elektron retsept va davlat hisobidan bepul dorilar." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", type: "image/png", href: "/favicon.png" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {

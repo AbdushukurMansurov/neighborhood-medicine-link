@@ -10,9 +10,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/qollanma")({
   head: () => ({
     meta: [
-      { title: "Reimbursatsiya qo'llanmasi — Shifo" },
+      { title: "Reimbursatsiya qo'llanmasi — Averuna" },
       { name: "description", content: "Davlat hisobidan bepul dorini 4 qadamda qanday olish mumkin va sizning tashxisingiz bo'yicha qaysi dorilar 0 so'mga beriladi." },
-      { property: "og:title", content: "Reimbursatsiya qo'llanmasi — Shifo" },
+      { property: "og:title", content: "Reimbursatsiya qo'llanmasi — Averuna" },
       { property: "og:description", content: "Bepul dorini 4 qadamda olish va huquqingizni tekshirish." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
@@ -32,12 +32,12 @@ const STEPS = [
     icon: MessageSquareText,
     title: "E-retsept va SMS kod oling",
     text: "Shifokor elektron retsept yozadi. Telefoningizga 12 xonali retsept raqami va 4 xonali SMS kod keladi. Retsept 7 kun amal qiladi.",
-    tips: ["SMS kodni hech kimga bermang — faqat farmatsevtga ayting", "Smartfon bo'lmasa, retseptni qog'ozga chop ettiring", "Muddatni Shifo taqvimida kuzating"],
+    tips: ["SMS kodni hech kimga bermang — faqat farmatsevtga ayting", "Smartfon bo'lmasa, retseptni qog'ozga chop ettiring", "Muddatni Averuna taqvimida kuzating"],
   },
   {
     icon: Store,
     title: "DTSJ hamkor dorixonasini toping",
-    text: "Davlat dorilari faqat DTSJ bilan shartnoma tuzgan dorixonalarda 0 so'mga beriladi. Shifo xaritasida ular yashil belgi bilan ko'rsatilgan.",
+    text: "Davlat dorilari faqat DTSJ bilan shartnoma tuzgan dorixonalarda 0 so'mga beriladi. Averuna xaritasida ular yashil belgi bilan ko'rsatilgan.",
     tips: ["«Mening yaqinimdagi dorixonalar» tugmasini bosing", "Dori bor-yo'qligini oldindan tekshiring", "Dori tugagan bo'lsa — o'rinbosar dorini so'rang"],
   },
   {

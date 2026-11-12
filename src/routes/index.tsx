@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Shifo — Davlat dorilarini 0 so'mga oling" },
+      { title: "Averuna — Davlat dorilarini 0 so'mga oling" },
       { name: "description", content: "Shifokor 12 xonali e-retsept yozadi, bemor uni kuzatadi, farmatsevt bir necha soniyada dori beradi. Surunkali kasalliklar uchun bepul dorilar." },
-      { property: "og:title", content: "Shifo — Davlat dorilarini 0 so'mga oling" },
+      { property: "og:title", content: "Averuna — Davlat dorilarini 0 so'mga oling" },
       { property: "og:description", content: "Shifokor 12 xonali e-retsept yozadi, bemor uni kuzatadi, farmatsevt bir necha soniyada dori beradi." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -41,7 +41,7 @@ function Index() {
             Bitta retsept kodi. Dorini 0 so'mga olishning eng oson yo'li.
           </h1>
           <p className="mt-6 max-w-xl text-xl text-muted-foreground">
-            Shifo shifokor, bemor va hamkor dorixonalarni yagona 12 xonali elektron retsept atrofida birlashtiradi. Gipertoniya, qandli diabet, astma va boshqa surunkali kasalliklar uchun dorilar davlat hisobidan.
+            Averuna shifokor, bemor va hamkor dorixonalarni yagona 12 xonali elektron retsept atrofida birlashtiradi. Gipertoniya, qandli diabet, astma va boshqa surunkali kasalliklar uchun dorilar davlat hisobidan.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="xl"><Link to="/auth">Boshlash</Link></Button>

@@ -9,9 +9,9 @@ import { formatSom, patientPrice } from "@/lib/pharmacy-data";
 export const Route = createFileRoute("/medicines")({
   head: () => ({
     meta: [
-      { title: "Dorilar va reimbursatsiya — Shifo" },
+      { title: "Dorilar va reimbursatsiya — Averuna" },
       { name: "description", content: "Dorilarni savdo va XPN nomi bo'yicha qidiring: DTSJ qancha qoplashi va bemor qancha to'lashini ko'ring." },
-      { property: "og:title", content: "Dorilar va reimbursatsiya — Shifo" },
+      { property: "og:title", content: "Dorilar va reimbursatsiya — Averuna" },
       { property: "og:description", content: "Dorilarni savdo va XPN nomi bo'yicha qidiring: DTSJ qancha qoplashi va bemor qancha to'lashini ko'ring." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

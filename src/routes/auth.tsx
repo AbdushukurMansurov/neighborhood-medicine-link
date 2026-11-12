@@ -13,10 +13,10 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Kirish va ro'yxatdan o'tish — Shifo" },
-      { name: "description", content: "Shifo'ga bemor, shifokor yoki farmatsevt sifatida kiring yoki yangi hisob oching." },
-      { property: "og:title", content: "Kirish va ro'yxatdan o'tish — Shifo" },
-      { property: "og:description", content: "Shifo'ga bemor, shifokor yoki farmatsevt sifatida kiring yoki yangi hisob oching." },
+      { title: "Kirish va ro'yxatdan o'tish — Averuna" },
+      { name: "description", content: "Averuna'ga bemor, shifokor yoki farmatsevt sifatida kiring yoki yangi hisob oching." },
+      { property: "og:title", content: "Kirish va ro'yxatdan o'tish — Averuna" },
+      { property: "og:description", content: "Averuna'ga bemor, shifokor yoki farmatsevt sifatida kiring yoki yangi hisob oching." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -81,7 +81,7 @@ function AuthPage() {
       <div className="mx-auto max-w-lg px-4 py-12 sm:py-16">
         <DemoLoginBar className="mb-6" />
         <div className="rounded-2xl border bg-card p-6 shadow-soft sm:p-8">
-          <h1 className="text-3xl font-semibold">Shifo'ga xush kelibsiz</h1>
+          <h1 className="text-3xl font-semibold">Averuna'ga xush kelibsiz</h1>
           <p className="mt-1 text-lg text-muted-foreground">Hisobingizga kiring yoki yangi hisob oching.</p>
           {sent ? (
             <p className="mt-6 rounded-lg bg-secondary p-4 text-lg text-secondary-foreground">

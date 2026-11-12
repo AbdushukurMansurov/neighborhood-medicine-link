@@ -36,7 +36,7 @@ export function PrescriptionReceiptButton({ data, className }: { data: ReceiptDa
           <div className="print-area rounded-2xl border-2 border-foreground bg-card p-6 text-card-foreground">
             <div className="flex items-start justify-between gap-4 border-b-2 border-dashed pb-4">
               <div>
-                <p className="font-display text-2xl font-bold">Shifo · Elektron retsept</p>
+                <p className="font-display text-2xl font-bold">Averuna · Elektron retsept</p>
                 <p className="text-base text-muted-foreground">Davlat tibbiy sug'urta jamg'armasi (DTSJ)</p>
               </div>
               <QRCodeSVG value={data.code} size={112} level="M" aria-label="Retsept QR kodi" />

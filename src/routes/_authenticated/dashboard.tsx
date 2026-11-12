@@ -8,10 +8,10 @@ import { DemoLoginBar } from "@/components/DemoLoginBar";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Bosh panel — Shifo" },
-      { name: "description", content: "Dorixonalar, bepul dorilar, e-retseptlar va 7 kunlik retsept taymeri — Shifo bosh paneli." },
-      { property: "og:title", content: "Bosh panel — Shifo" },
-      { property: "og:description", content: "Dorixonalar, bepul dorilar, e-retseptlar va 7 kunlik retsept taymeri — Shifo bosh paneli." },
+      { title: "Bosh panel — Averuna" },
+      { name: "description", content: "Dorixonalar, bepul dorilar, e-retseptlar va 7 kunlik retsept taymeri — Averuna bosh paneli." },
+      { property: "og:title", content: "Bosh panel — Averuna" },
+      { property: "og:description", content: "Dorixonalar, bepul dorilar, e-retseptlar va 7 kunlik retsept taymeri — Averuna bosh paneli." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
