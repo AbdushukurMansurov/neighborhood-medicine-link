@@ -4,6 +4,7 @@ import { Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatPrescriptionCode, formatUzDate } from "@/lib/prescription-timer";
+import logo from "@/assets/averuna-logo.png.asset.json";
 
 export type ReceiptData = {
   code: string;
@@ -36,6 +37,7 @@ export function PrescriptionReceiptButton({ data, className }: { data: ReceiptDa
           <div className="print-area rounded-2xl border-2 border-foreground bg-card p-6 text-card-foreground">
             <div className="flex items-start justify-between gap-4 border-b-2 border-dashed pb-4">
               <div>
+                <img src={logo.url} alt="Averuna Pharmacy" width={900} height={213} className="mb-2 h-10 w-auto" />
                 <p className="font-display text-2xl font-bold">Averuna · Elektron retsept</p>
                 <p className="text-base text-muted-foreground">Davlat tibbiy sug'urta jamg'armasi (DTSJ)</p>
               </div>
