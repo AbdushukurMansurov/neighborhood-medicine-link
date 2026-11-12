@@ -6,9 +6,9 @@ import type { Database } from "@/integrations/supabase/types";
 
 export type AppRole = Database["public"]["Enums"]["app_role"];
 export const ROLES: { value: AppRole; label: string; hint: string }[] = [
-  { value: "patient", label: "Patient", hint: "View your prescriptions" },
-  { value: "doctor", label: "Doctor", hint: "Issue prescriptions" },
-  { value: "pharmacist", label: "Pharmacist", hint: "Verify & dispense" },
+  { value: "patient", label: "Bemor", hint: "Retseptlarimni ko'rish" },
+  { value: "doctor", label: "Shifokor", hint: "Retsept yozish" },
+  { value: "pharmacist", label: "Farmatsevt", hint: "Tekshirish va berish" },
 ];
 
 export function useUser() {
