@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Cross } from "lucide-react";
+import logo from "@/assets/averuna-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useUser } from "@/lib/auth";
@@ -23,11 +23,8 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur">
       <div className="mx-auto flex min-h-16 max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2">
-        <Link to="/" className="flex items-center gap-2 font-display text-lg font-semibold">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground">
-            <Cross className="h-4 w-4" />
-          </span>
-          Shifo
+        <Link to="/" className="flex shrink-0 items-center" aria-label="Averuna — bosh sahifa">
+          <img src={logo.url} alt="Averuna Pharmacy" width={900} height={213} className="h-10 w-auto sm:h-11" />
         </Link>
         <div className="ml-auto flex items-center gap-2 sm:order-last">
           <Button
