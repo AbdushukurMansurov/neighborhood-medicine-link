@@ -1,9 +1,11 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CalendarClock, MapPin, Pill } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { LiveSyncBadge } from "@/components/LiveSyncBadge";
 import { useCareStore } from "@/lib/care-store";
+import { useLiveStock } from "@/lib/use-live-stock";
 import { enrichPharmacy, pharmaciesWithStock, type Medicine } from "@/lib/pharmacy-data";
 import { MedicineChecker } from "./MedicineChecker";
 import { PharmacyFinder, type MapHighlight } from "./PharmacyFinder";
@@ -37,14 +39,8 @@ export function CareDashboard({ userId }: { userId: string }) {
       return data;
     },
   });
-  const { data: stock = [] } = useQuery({
-    queryKey: ["stock"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("pharmacy_stock").select("pharmacy_id, medicine_id, quantity");
-      if (error) throw error;
-      return data;
-    },
-  });
+  const live = useLiveStock();
+  const stock = live.stock;
   const { data: prescriptions = [] } = useQuery({
     queryKey: ["rx", "patient", userId],
     queryFn: async () => {
@@ -66,7 +62,7 @@ export function CareDashboard({ userId }: { userId: string }) {
       toast.error("Bu dori hozircha hamkor dorixonalarda yo'q");
       return;
     }
-    setHighlight({ medicine: m, pharmacyIds: ids });
+    setHighlight({ medicine: m });
     mapSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -91,9 +87,11 @@ export function CareDashboard({ userId }: { userId: string }) {
       </nav>
 
       <section id="dorixonalar" ref={mapSectionRef} className="scroll-mt-20 space-y-5">
-        <SectionTitle n={1} title="Dorixona qidiruvchisi" text="Hududni tanlang yoki yaqiningizdagi dorixonalarni toping." />
+        <SectionTitle n={1} title="Dorixona qidiruvchisi" text="Hududni tanlang yoki yaqiningizdagi dorixonalarni toping."
+          aside={<LiveSyncBadge status={live.status} syncedAt={live.syncedAt} refreshing={live.refreshing} onRefresh={live.refresh} />} />
         <PharmacyFinder
           pharmacies={pharmacies}
+          stock={stock}
           highlight={highlight}
           onClearHighlight={() => setHighlight(null)}
           onAddToCalendar={addToCalendar}
@@ -102,7 +100,8 @@ export function CareDashboard({ userId }: { userId: string }) {
       </section>
 
       <section id="dorilar" className="scroll-mt-20 space-y-5">
-        <SectionTitle n={2} title="Dori mavjudligini tekshirish" text="Savdo nomi yoki xalqaro patentlanmagan nomi (XPN) bo'yicha qidiring." />
+        <SectionTitle n={2} title="Dori mavjudligini tekshirish" text="Savdo nomi yoki xalqaro patentlanmagan nomi (XPN) bo'yicha qidiring."
+          aside={<LiveSyncBadge status={live.status} syncedAt={live.syncedAt} refreshing={live.refreshing} onRefresh={live.refresh} />} />
         <MedicineChecker
           medicines={medicines}
           pharmacies={pharmacies}
@@ -122,14 +121,15 @@ export function CareDashboard({ userId }: { userId: string }) {
   );
 }
 
-function SectionTitle({ n, title, text }: { n: number; title: string; text: string }) {
+function SectionTitle({ n, title, text, aside }: { n: number; title: string; text: string; aside?: ReactNode }) {
   return (
-    <div className="flex items-start gap-4 border-b-2 pb-4">
+    <div className="flex flex-wrap items-start gap-4 border-b-2 pb-4">
       <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-foreground font-display text-2xl font-bold text-background">{n}</span>
       <div>
         <h2 className="text-3xl font-bold">{title}</h2>
         <p className="text-lg text-muted-foreground">{text}</p>
       </div>
+      {aside && <div className="w-full lg:ml-auto lg:w-auto">{aside}</div>}
     </div>
   );
 }
