@@ -13,6 +13,11 @@ import {
   formatUzDate, isValidPrescriptionCode, monthGrid, nextDoctorVisit, timeLeft, urgencyOf,
 } from "@/lib/prescription-timer";
 import { cn } from "@/lib/utils";
+import { PrescriptionReceiptButton } from "@/components/PrescriptionReceipt";
+import { TelegramReminders } from "./TelegramReminders";
+
+export const PATIENT_RX_SELECT =
+  "id, code, status, issued_at, expires_at, medicine_id, dosage, quantity, diagnosis, medicines(brand_name, generic_name_xpn), prescription_sms(sms_code)";
 
 export type PatientRx = {
   id: string;
@@ -21,8 +26,18 @@ export type PatientRx = {
   issued_at: string;
   expires_at: string;
   medicine_id: string;
+  dosage?: string | null;
+  quantity?: number | null;
+  diagnosis?: string | null;
   medicines: { brand_name: string; generic_name_xpn: string } | null;
+  prescription_sms?: { sms_code: string } | { sms_code: string }[] | null;
 };
+
+function smsCodeOf(rx: PatientRx) {
+  const s = rx.prescription_sms;
+  if (!s) return null;
+  return Array.isArray(s) ? (s[0]?.sms_code ?? null) : s.sms_code;
+}
 
 type ActiveRx = {
   code: string;
@@ -31,6 +46,7 @@ type ActiveRx = {
   medicine: Medicine | null;
   medicineName: string;
   demo: boolean;
+  rx?: PatientRx;
 };
 
 type Props = {
@@ -65,7 +81,7 @@ export function PrescriptionCalendar({ prescriptions, medicines, store, onShowFr
     const m = medById(rx.medicine_id);
     setActive({
       code: rx.code, issuedAt: new Date(rx.issued_at), expiresAt: new Date(rx.expires_at),
-      medicine: m, medicineName: rx.medicines?.brand_name ?? m?.brand_name ?? "Dori", demo: false,
+      medicine: m, medicineName: rx.medicines?.brand_name ?? m?.brand_name ?? "Dori", demo: false, rx,
     });
     if (m) store.addMedicine(m, rx.issued_at);
     setCode(rx.code);
@@ -83,7 +99,7 @@ export function PrescriptionCalendar({ prescriptions, medicines, store, onShowFr
     setChecking(true);
     const { data } = await supabase
       .from("prescriptions")
-      .select("id, code, status, issued_at, expires_at, medicine_id, medicines(brand_name, generic_name_xpn)")
+      .select(PATIENT_RX_SELECT)
       .eq("code", clean)
       .maybeSingle();
     setChecking(false);
@@ -148,6 +164,8 @@ export function PrescriptionCalendar({ prescriptions, medicines, store, onShowFr
       </div>
 
       <MonthCalendar store={store} activeIssuedAt={active?.issuedAt ?? null} />
+
+      <TelegramReminders store={store} active={active ? { code: active.code, medicineName: active.medicineName, expiresAt: active.expiresAt } : null} />
 
       <Dialog open={scanning} onOpenChange={setScanning}>
         <DialogContent className="max-w-md">
@@ -251,6 +269,28 @@ function Countdown({ active, onShowFreePharmacies }: { active: ActiveRx | null; 
         <Button size="xl" variant="success" className="mt-4 w-full" onClick={() => onShowFreePharmacies(active.medicine!)}>
           <MapPinned /> Yaqin dorixonadan bepul olish
         </Button>
+      )}
+      {active.rx && active.rx.status === "active" && !left.expired && (
+        <>
+          {smsCodeOf(active.rx) && (
+            <p className="mt-4 rounded-xl bg-card p-3 text-lg">
+              Dorixonada aytiladigan SMS kod: <strong className="font-mono text-2xl tracking-widest">{smsCodeOf(active.rx)}</strong>
+            </p>
+          )}
+          <PrescriptionReceiptButton
+            className="mt-3 w-full"
+            data={{
+              code: active.code,
+              medicineName: active.medicineName,
+              xpn: active.rx.medicines?.generic_name_xpn,
+              dosage: active.rx.dosage,
+              quantity: active.rx.quantity,
+              smsCode: smsCodeOf(active.rx),
+              issuedAt: active.issuedAt,
+              expiresAt: active.expiresAt,
+            }}
+          />
+        </>
       )}
     </div>
   );
