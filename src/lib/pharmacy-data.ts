@@ -19,6 +19,9 @@ const CITY_UZ: Record<string, { city: string; region: string }> = {
   Tashkent: { city: "Toshkent", region: "Toshkent shahri" },
   Samarkand: { city: "Samarqand", region: "Samarqand viloyati" },
   Bukhara: { city: "Buxoro", region: "Buxoro viloyati" },
+  Andijan: { city: "Andijon", region: "Andijon viloyati" },
+  Namangan: { city: "Namangan", region: "Namangan viloyati" },
+  Fergana: { city: "Farg'ona", region: "Farg'ona viloyati" },
 };
 
 const PHARMACY_EXTRAS: Record<string, { district: string; hours: string }> = {
@@ -27,6 +30,21 @@ const PHARMACY_EXTRAS: Record<string, { district: string; hours: string }> = {
   "Green Cross": { district: "Samarqand shahri", hours: "Du–Sha 09:00 – 20:00" },
   "Shifo Apteka": { district: "Buxoro shahri", hours: "Har kuni 08:00 – 21:00" },
   "Arzon Apteka": { district: "Chilonzor tumani", hours: "Har kuni 08:00 – 23:00" },
+  "Ibn Sino Dorixonasi": { district: "Yunusobod tumani", hours: "Har kuni 08:00 – 22:00" },
+  "Sihat Plus": { district: "Yunusobod tumani", hours: "Kecha-kunduz (24/7)" },
+  "Navro'z Farm": { district: "Chilonzor tumani", hours: "Har kuni 08:00 – 21:00" },
+  "Mehr Dorixonasi": { district: "Chilonzor tumani", hours: "Du–Sha 09:00 – 20:00" },
+  "Ulug'bek Farm": { district: "Mirzo Ulug'bek tumani", hours: "Har kuni 08:00 – 23:00" },
+  "Buyuk Ipak Dorixonasi": { district: "Mirzo Ulug'bek tumani", hours: "Har kuni 07:30 – 22:00" },
+  "Sergeli Sog'lom Hayot": { district: "Sergeli tumani", hours: "Har kuni 08:00 – 21:00" },
+  "Eski Shahar Dorixonasi": { district: "Shayxontohur tumani", hours: "Kecha-kunduz (24/7)" },
+  "Olmazor Med": { district: "Olmazor tumani", hours: "Du–Sha 08:30 – 20:30" },
+  "Afrosiyob Farm": { district: "Samarqand shahri", hours: "Har kuni 08:00 – 22:00" },
+  "Registon Dorixonasi": { district: "Samarqand shahri", hours: "Har kuni 08:00 – 21:00" },
+  "Naqshband Farm": { district: "Buxoro shahri", hours: "Har kuni 08:00 – 21:00" },
+  "Bobur Dorixonasi": { district: "Andijon shahri", hours: "Har kuni 08:00 – 22:00" },
+  "Namangan Gul Farm": { district: "Namangan shahri", hours: "Har kuni 08:00 – 21:00" },
+  "Farg'ona Sihat": { district: "Farg'ona shahri", hours: "Du–Sha 08:00 – 21:00" },
 };
 
 export function enrichPharmacy(p: Pharmacy): EnrichedPharmacy {
