@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 type ActiveInfo = { code: string; medicineName: string; expiresAt: Date } | null;
 
-/** Visual preview of the reminders a patient would get from the Shifo Telegram bot. */
+/** Visual preview of the reminders a patient would get from the Averuna Telegram bot. */
 export function TelegramReminders({ store, active }: { store: CareStore; active: ActiveInfo }) {
   const on = store.telegram;
   const left = active ? timeLeft(active.expiresAt, new Date()) : null;
@@ -23,7 +23,7 @@ export function TelegramReminders({ store, active }: { store: CareStore; active:
         <span>
           <span className="flex items-center gap-2 text-xl font-bold"><Send className="h-6 w-6 text-telegram" /> Telegram orqali eslatma olish</span>
           <span className="mt-1 block text-lg text-muted-foreground">
-            @ShifoEslatmaBot har kuni dori ichish vaqtini va retsept muddati tugashidan oldin ogohlantirish yuboradi.
+            @AverunaEslatmaBot har kuni dori ichish vaqtini va retsept muddati tugashidan oldin ogohlantirish yuboradi.
           </span>
           {on && <span className="mt-2 block text-lg font-semibold text-telegram">Yoqilgan — namunaviy xabarlar o'ngda ko'rsatilgan.</span>}
         </span>
@@ -33,7 +33,7 @@ export function TelegramReminders({ store, active }: { store: CareStore; active:
         <div className="flex items-center gap-3 bg-telegram px-4 py-3 text-telegram-foreground">
           <span className="grid h-10 w-10 place-items-center rounded-full bg-telegram-foreground/20"><BellRing className="h-5 w-5" /></span>
           <div>
-            <p className="font-bold leading-tight">Shifo Eslatma</p>
+            <p className="font-bold leading-tight">Averuna Eslatma</p>
             <p className="text-sm opacity-80">bot</p>
           </div>
         </div>

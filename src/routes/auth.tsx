@@ -9,14 +9,15 @@ import { DemoLoginBar } from "@/components/DemoLoginBar";
 import { supabase } from "@/integrations/supabase/client";
 import { ROLES, type AppRole } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+import logo from "@/assets/averuna-logo.png.asset.json";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Kirish va ro'yxatdan o'tish — Shifo" },
-      { name: "description", content: "Shifo'ga bemor, shifokor yoki farmatsevt sifatida kiring yoki yangi hisob oching." },
-      { property: "og:title", content: "Kirish va ro'yxatdan o'tish — Shifo" },
-      { property: "og:description", content: "Shifo'ga bemor, shifokor yoki farmatsevt sifatida kiring yoki yangi hisob oching." },
+      { title: "Kirish va ro'yxatdan o'tish — Averuna" },
+      { name: "description", content: "Averunaga bemor, shifokor yoki farmatsevt sifatida kiring yoki yangi hisob oching." },
+      { property: "og:title", content: "Kirish va ro'yxatdan o'tish — Averuna" },
+      { property: "og:description", content: "Averunaga bemor, shifokor yoki farmatsevt sifatida kiring yoki yangi hisob oching." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -81,7 +82,8 @@ function AuthPage() {
       <div className="mx-auto max-w-lg px-4 py-12 sm:py-16">
         <DemoLoginBar className="mb-6" />
         <div className="rounded-2xl border bg-card p-6 shadow-soft sm:p-8">
-          <h1 className="text-3xl font-semibold">Shifo'ga xush kelibsiz</h1>
+          <img src={logo.url} alt="Averuna Pharmacy" width={900} height={213} className="mb-6 h-14 w-auto" />
+          <h1 className="text-3xl font-semibold">Averunaga xush kelibsiz</h1>
           <p className="mt-1 text-lg text-muted-foreground">Hisobingizga kiring yoki yangi hisob oching.</p>
           {sent ? (
             <p className="mt-6 rounded-lg bg-secondary p-4 text-lg text-secondary-foreground">

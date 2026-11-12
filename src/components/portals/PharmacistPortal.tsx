@@ -5,7 +5,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { supabase } from "@/integrations/supabase/client";
+import { LiveSyncBadge } from "@/components/LiveSyncBadge";
 import { isExpired } from "@/lib/auth";
+import { useLiveStock } from "@/lib/use-live-stock";
 import { conditionLabel } from "@/lib/conditions";
 import { formatSom, isFreeMedicine, patientPrice, stockAt } from "@/lib/pharmacy-data";
 import { formatPrescriptionCode, formatUzDate } from "@/lib/prescription-timer";
@@ -39,14 +41,8 @@ export function PharmacistPortal() {
       return data;
     },
   });
-  const { data: stock = [] } = useQuery({
-    queryKey: ["stock"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("pharmacy_stock").select("pharmacy_id, medicine_id, quantity");
-      if (error) throw error;
-      return data;
-    },
-  });
+  const live = useLiveStock();
+  const stock = live.stock;
   const { data: medicines = [] } = useQuery({
     queryKey: ["medicines"],
     queryFn: async () => {
@@ -191,12 +187,13 @@ export function PharmacistPortal() {
 
         <section className="space-y-3 rounded-2xl border-2 bg-card p-5">
           <h3 className="text-2xl font-bold">Zaxira: {pharmacy?.name}</h3>
+          <LiveSyncBadge status={live.status} syncedAt={live.syncedAt} refreshing={live.refreshing} onRefresh={live.refresh} />
           {inventory.length === 0 ? <p className="text-lg text-muted-foreground">Zaxira ma'lumoti yo'q.</p> : (
             <ul className="divide-y">
               {inventory.map(({ m, qty }) => (
                 <li key={m.id} className="flex items-center justify-between gap-3 py-2 text-lg">
                   <span><strong>{m.brand_name}</strong> <span className="text-muted-foreground">{m.strength}</span></span>
-                  <span className={qty > 0 ? "font-bold" : "font-bold text-destructive"}>{qty > 0 ? `${qty} dona` : "Tugagan"}</span>
+                  <span className={qty > 0 ? "font-bold tabular-nums" : "font-bold text-destructive"}>{qty > 0 ? `${qty} dona` : "Tugagan"}</span>
                 </li>
               ))}
             </ul>

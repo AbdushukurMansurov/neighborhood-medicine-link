@@ -6,12 +6,14 @@ import type { EnrichedPharmacy, LatLng } from "@/lib/pharmacy-data";
 type Props = {
   pharmacies: EnrichedPharmacy[];
   highlightedIds: string[];
+  highlightLabel?: string | undefined;
+  highlightQty?: Record<string, number>;
   selectedId: string | null;
   userLocation: LatLng | null;
   onSelect: (id: string) => void;
 };
 
-export default function PharmacyMap({ pharmacies, highlightedIds, selectedId, userLocation, onSelect }: Props) {
+export default function PharmacyMap({ pharmacies, highlightedIds, highlightLabel, highlightQty, selectedId, userLocation, onSelect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.LayerGroup | null>(null);
@@ -56,7 +58,10 @@ export default function PharmacyMap({ pharmacies, highlightedIds, selectedId, us
         title: p.name,
         zIndexOffset: highlighted ? 1000 : 0,
       })
-        .bindPopup(`<strong>${p.name}</strong><br/>${p.address}, ${p.cityUz}`)
+        .bindPopup(
+          `<strong>${p.name}</strong><br/>${p.address}, ${p.cityUz}` +
+            (highlighted && highlightLabel && highlightQty?.[p.id] != null ? `<br/>«${highlightLabel}»: <strong>${highlightQty[p.id]} dona</strong>` : ""),
+        )
         .on("click", () => onSelectRef.current(p.id));
       marker.addTo(layer);
       if (p.id === selectedId) marker.openPopup();
@@ -81,7 +86,7 @@ export default function PharmacyMap({ pharmacies, highlightedIds, selectedId, us
     } else if (points.length > 1) {
       map.fitBounds(L.latLngBounds(points), { padding: [48, 48], maxZoom: 13 });
     }
-  }, [pharmacies, highlightedIds, selectedId, userLocation]);
+  }, [pharmacies, highlightedIds, highlightLabel, highlightQty, selectedId, userLocation]);
 
   return <div ref={containerRef} className="h-full w-full" role="application" aria-label="Dorixonalar xaritasi" />;
 }

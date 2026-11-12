@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
-  formatSom, freeAlternatives, isFreeMedicine, isShortage, matchesMedicine, patientPrice, pharmaciesWithStock,
+  formatSom, freeAlternatives, isFreeMedicine, isShortage, matchesMedicine, patientPrice, pharmaciesWithStock, stockAt,
   type EnrichedPharmacy, type Medicine, type StockRow,
 } from "@/lib/pharmacy-data";
 import { cn } from "@/lib/utils";
@@ -70,6 +70,7 @@ export function MedicineChecker({ medicines, pharmacies, stock, loading, onGetFr
               shortage={isShortage(m, pharmacies, stock)}
               alternatives={isShortage(m, pharmacies, stock) ? freeAlternatives(m, medicines, pharmacies, stock) : []}
               altStock={(alt) => pharmaciesWithStock(alt, pharmacies, stock)}
+              qtyAt={(pharmacyId) => stockAt(stock, pharmacyId, m.id)}
               onShowAlternative={onGetFree}
               showStock={freeOnly}
               tracked={isTracked(m.id)}
@@ -83,8 +84,8 @@ export function MedicineChecker({ medicines, pharmacies, stock, loading, onGetFr
   );
 }
 
-function MedicineCard({ m, stock, shortage, alternatives, altStock, onShowAlternative, showStock, tracked, onGetFree, onAddToCalendar }: {
-  m: Medicine; stock: EnrichedPharmacy[]; shortage: boolean; alternatives: Medicine[]; altStock: (alt: Medicine) => EnrichedPharmacy[];
+function MedicineCard({ m, stock, qtyAt, shortage, alternatives, altStock, onShowAlternative, showStock, tracked, onGetFree, onAddToCalendar }: {
+  m: Medicine; stock: EnrichedPharmacy[]; qtyAt: (pharmacyId: string) => number; shortage: boolean; alternatives: Medicine[]; altStock: (alt: Medicine) => EnrichedPharmacy[];
   onShowAlternative: (alt: Medicine) => void; showStock: boolean; tracked: boolean; onGetFree: () => void; onAddToCalendar: () => void;
 }) {
   const free = isFreeMedicine(m);
@@ -140,7 +141,7 @@ function MedicineCard({ m, stock, shortage, alternatives, altStock, onShowAltern
           </p>
           {stock.length > 0 && (
             <ul className="mt-2 space-y-1 text-lg">
-              {stock.map((p) => <li key={p.id}>• {p.name} — {p.cityUz}</li>)}
+              {stock.map((p) => <li key={p.id}>• {p.name} — {p.cityUz} · <strong className="tabular-nums">{qtyAt(p.id)} dona</strong></li>)}
             </ul>
           )}
         </div>

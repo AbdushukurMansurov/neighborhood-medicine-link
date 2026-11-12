@@ -3,15 +3,16 @@ import { BadgeCheck, CalendarPlus, Clock, LocateFixed, MapPin, Phone, X } from "
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_LOCATION, distanceKm, type EnrichedPharmacy, type LatLng, type Medicine } from "@/lib/pharmacy-data";
+import { DEFAULT_LOCATION, distanceKm, pharmaciesWithStock, stockAt, type EnrichedPharmacy, type LatLng, type Medicine, type StockRow } from "@/lib/pharmacy-data";
 import { cn } from "@/lib/utils";
 
 const PharmacyMap = lazy(() => import("./PharmacyMap"));
 
-export type MapHighlight = { medicine: Medicine; pharmacyIds: string[] };
+export type MapHighlight = { medicine: Medicine };
 
 type Props = {
   pharmacies: EnrichedPharmacy[];
+  stock: StockRow[];
   highlight: MapHighlight | null;
   onClearHighlight: () => void;
   onAddToCalendar: (m: Medicine) => void;
@@ -20,12 +21,23 @@ type Props = {
 
 const ALL = "";
 
-export function PharmacyFinder({ pharmacies, highlight, onClearHighlight, onAddToCalendar, isTracked }: Props) {
+export function PharmacyFinder({ pharmacies, stock, highlight, onClearHighlight, onAddToCalendar, isTracked }: Props) {
   const [region, setRegion] = useState(ALL);
   const [district, setDistrict] = useState(ALL);
   const [userLocation, setUserLocation] = useState<LatLng | null>(null);
   const [locating, setLocating] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // Recomputed from live stock, so a pharmacy that runs out drops off the map instantly.
+  const highlightIds = useMemo(
+    () => (highlight ? pharmaciesWithStock(highlight.medicine, pharmacies, stock).map((p) => p.id) : []),
+    [highlight, pharmacies, stock],
+  );
+  const highlightQty = useMemo(() => {
+    const out: Record<string, number> = {};
+    if (highlight) for (const id of highlightIds) out[id] = stockAt(stock, id, highlight.medicine.id);
+    return out;
+  }, [highlight, highlightIds, stock]);
 
   const regions = useMemo(() => [...new Set(pharmacies.map((p) => p.region))], [pharmacies]);
   const districts = useMemo(
@@ -35,7 +47,7 @@ export function PharmacyFinder({ pharmacies, highlight, onClearHighlight, onAddT
 
   const list = useMemo(() => {
     let items = pharmacies.filter((p) => (!region || p.region === region) && (!district || p.district === district));
-    if (highlight) items = pharmacies.filter((p) => highlight.pharmacyIds.includes(p.id));
+    if (highlight) items = pharmacies.filter((p) => highlightIds.includes(p.id));
     const withDistance = items.map((p) => ({
       p,
       km: userLocation && p.latitude != null && p.longitude != null
@@ -44,7 +56,7 @@ export function PharmacyFinder({ pharmacies, highlight, onClearHighlight, onAddT
     }));
     if (userLocation) withDistance.sort((a, b) => (a.km ?? Infinity) - (b.km ?? Infinity));
     return withDistance;
-  }, [pharmacies, region, district, highlight, userLocation]);
+  }, [pharmacies, region, district, highlight, highlightIds, userLocation]);
 
   function nearMe() {
     setRegion(ALL);
@@ -80,7 +92,7 @@ export function PharmacyFinder({ pharmacies, highlight, onClearHighlight, onAddT
           <div className="flex-1">
             <p className="text-xl font-bold">«{highlight.medicine.brand_name}» — bepul olish mumkin</p>
             <p className="mt-1 text-lg">
-              Xaritada <strong>{highlight.pharmacyIds.length} ta</strong> DTSJ hamkor dorixona sariq rangda belgilandi.
+              Xaritada <strong>{highlightIds.length} ta</strong> DTSJ hamkor dorixona sariq rangda belgilandi.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -123,7 +135,9 @@ export function PharmacyFinder({ pharmacies, highlight, onClearHighlight, onAddT
           <Suspense fallback={<div className="grid h-full place-items-center text-lg text-muted-foreground">Xarita yuklanmoqda…</div>}>
             <PharmacyMap
               pharmacies={pharmacies}
-              highlightedIds={highlight?.pharmacyIds ?? []}
+              highlightedIds={highlightIds}
+              highlightLabel={highlight?.medicine.brand_name}
+              highlightQty={highlightQty}
               selectedId={selectedId}
               userLocation={userLocation}
               onSelect={setSelectedId}
@@ -139,8 +153,9 @@ export function PharmacyFinder({ pharmacies, highlight, onClearHighlight, onAddT
               p={p}
               km={km}
               selected={p.id === selectedId}
-              highlighted={!!highlight?.pharmacyIds.includes(p.id)}
+              highlighted={highlightIds.includes(p.id)}
               freeMedicine={highlight?.medicine.brand_name}
+              qty={highlightQty[p.id]}
               onSelect={() => setSelectedId(p.id)}
             />
           ))}
@@ -150,8 +165,8 @@ export function PharmacyFinder({ pharmacies, highlight, onClearHighlight, onAddT
   );
 }
 
-function PharmacyCard({ p, km, selected, highlighted, freeMedicine, onSelect }: {
-  p: EnrichedPharmacy; km: number | null; selected: boolean; highlighted: boolean; freeMedicine: string | undefined; onSelect: () => void;
+function PharmacyCard({ p, km, selected, highlighted, freeMedicine, qty, onSelect }: {
+  p: EnrichedPharmacy; km: number | null; selected: boolean; highlighted: boolean; freeMedicine: string | undefined; qty: number | undefined; onSelect: () => void;
 }) {
   return (
     <li
@@ -170,7 +185,7 @@ function PharmacyCard({ p, km, selected, highlighted, freeMedicine, onSelect }: 
         )}
       </div>
       {highlighted && freeMedicine && (
-        <p className="mt-2 text-lg font-semibold">«{freeMedicine}» hozir mavjud — 0 SO'M</p>
+        <p className="mt-2 text-lg font-semibold">«{freeMedicine}» hozir mavjud — 0 SO'M{qty != null && <> · <span className="tabular-nums">{qty} dona</span> qoldi</>}</p>
       )}
       <dl className="mt-3 space-y-2 text-lg">
         <div className="flex gap-3"><dt className="sr-only">Manzil</dt><MapPin className="mt-1 h-5 w-5 shrink-0 text-primary" /><dd>{p.address}, {p.cityUz} · {p.district}</dd></div>

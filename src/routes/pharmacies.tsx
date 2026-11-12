@@ -1,17 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { BadgeCheck, MapPin, Phone } from "lucide-react";
+import { BadgeCheck, Clock, MapPin, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-
-const CITY_UZ: Record<string, string> = { Tashkent: "Toshkent", Samarkand: "Samarqand", Bukhara: "Buxoro" };
+import { enrichPharmacy } from "@/lib/pharmacy-data";
 
 export const Route = createFileRoute("/pharmacies")({
   head: () => ({
     meta: [
-      { title: "Dorixonalar — Shifo" },
+      { title: "Dorixonalar — Averuna" },
       { name: "description", content: "Dorixonalar manzili, telefoni va DTSJ hamkorlik holati — bepul dorilarni qayerdan olishni bilib oling." },
-      { property: "og:title", content: "Dorixonalar — Shifo" },
+      { property: "og:title", content: "Dorixonalar — Averuna" },
       { property: "og:description", content: "Dorixonalar manzili, telefoni va DTSJ hamkorlik holati — bepul dorilarni qayerdan olishni bilib oling." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -35,7 +34,7 @@ function Pharmacies() {
       <p className="mt-2 text-lg text-muted-foreground">Yashil belgili DTSJ hamkor dorixonalarda davlat dorilari 0 so'mga beriladi.</p>
       {isLoading ? <p className="mt-6 text-muted-foreground">Yuklanmoqda…</p> : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {data.map((p) => (
+          {data.map(enrichPharmacy).map((p) => (
             <div key={p.id} className="rounded-2xl border bg-card p-5">
               <div className="flex items-start justify-between gap-2">
                 <h3 className="font-semibold">{p.name}</h3>
@@ -43,7 +42,8 @@ function Pharmacies() {
                   <Badge variant="partner" className="gap-1"><BadgeCheck className="h-3.5 w-3.5" /> DTSJ hamkori</Badge>
                 )}
               </div>
-              <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground"><MapPin className="h-4 w-4" />{p.address}, {CITY_UZ[p.city] ?? p.city}</p>
+              <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground"><MapPin className="h-4 w-4" />{p.address}, {p.cityUz} · {p.district}</p>
+              <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground"><Clock className="h-4 w-4" />{p.hours}</p>
               {p.phone && <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground"><Phone className="h-4 w-4" />{p.phone}</p>}
               {p.latitude != null && p.longitude != null && (
                 <a className="mt-3 inline-block text-sm font-medium text-primary hover:underline" target="_blank" rel="noreferrer"
