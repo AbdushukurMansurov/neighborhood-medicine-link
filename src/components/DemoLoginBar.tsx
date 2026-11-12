@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 const ICONS = { patient: HeartPulse, doctor: Stethoscope, pharmacist: Store } as const;
 
 /** One-click "Demo Kirish" bar: signs in as a ready demo patient, doctor or pharmacist. */
-export function DemoLoginBar({ current, className }: { current?: AppRole | null; className?: string }) {
+export function DemoLoginBar({ current, className }: { current?: AppRole | null | undefined; className?: string }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [busy, setBusy] = useState<AppRole | null>(null);

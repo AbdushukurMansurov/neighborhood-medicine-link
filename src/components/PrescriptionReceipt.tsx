@@ -8,11 +8,11 @@ import { formatPrescriptionCode, formatUzDate } from "@/lib/prescription-timer";
 export type ReceiptData = {
   code: string;
   medicineName: string;
-  xpn?: string | null;
-  dosage?: string | null;
-  quantity?: number | null;
-  patientName?: string | null;
-  smsCode?: string | null;
+  xpn?: string | null | undefined;
+  dosage?: string | null | undefined;
+  quantity?: number | null | undefined;
+  patientName?: string | null | undefined;
+  smsCode?: string | null | undefined;
   issuedAt: Date;
   expiresAt: Date;
 };

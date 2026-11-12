@@ -50,7 +50,7 @@ const STEPS = [
 
 function GuidePage() {
   const [step, setStep] = useState(0);
-  const current = STEPS[step];
+  const current = STEPS[step] ?? STEPS[0];
   const Icon = current.icon;
 
   return (
