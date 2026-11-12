@@ -1,24 +1,25 @@
 import { useMemo, useState } from "react";
-import { CalendarPlus, Check, MapPinned, Search, Store } from "lucide-react";
+import { AlertTriangle, CalendarPlus, Check, MapPinned, Search, Store } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
-  formatSom, isFreeMedicine, matchesMedicine, patientPrice, pharmaciesWithStock,
-  type EnrichedPharmacy, type Medicine,
+  formatSom, freeAlternatives, isFreeMedicine, isShortage, matchesMedicine, patientPrice, pharmaciesWithStock,
+  type EnrichedPharmacy, type Medicine, type StockRow,
 } from "@/lib/pharmacy-data";
 import { cn } from "@/lib/utils";
 
 type Props = {
   medicines: Medicine[];
   pharmacies: EnrichedPharmacy[];
+  stock: StockRow[];
   loading: boolean;
   onGetFree: (m: Medicine) => void;
   onAddToCalendar: (m: Medicine) => void;
   isTracked: (medicineId: string) => boolean;
 };
 
-export function MedicineChecker({ medicines, pharmacies, loading, onGetFree, onAddToCalendar, isTracked }: Props) {
+export function MedicineChecker({ medicines, pharmacies, stock, loading, onGetFree, onAddToCalendar, isTracked }: Props) {
   const [query, setQuery] = useState("");
   const [freeOnly, setFreeOnly] = useState(false);
 
@@ -65,7 +66,11 @@ export function MedicineChecker({ medicines, pharmacies, loading, onGetFree, onA
             <MedicineCard
               key={m.id}
               m={m}
-              stock={pharmaciesWithStock(m, pharmacies)}
+              stock={pharmaciesWithStock(m, pharmacies, stock)}
+              shortage={isShortage(m, pharmacies, stock)}
+              alternatives={isShortage(m, pharmacies, stock) ? freeAlternatives(m, medicines, pharmacies, stock) : []}
+              altStock={(alt) => pharmaciesWithStock(alt, pharmacies, stock)}
+              onShowAlternative={onGetFree}
               showStock={freeOnly}
               tracked={isTracked(m.id)}
               onGetFree={() => onGetFree(m)}
@@ -78,8 +83,9 @@ export function MedicineChecker({ medicines, pharmacies, loading, onGetFree, onA
   );
 }
 
-function MedicineCard({ m, stock, showStock, tracked, onGetFree, onAddToCalendar }: {
-  m: Medicine; stock: EnrichedPharmacy[]; showStock: boolean; tracked: boolean; onGetFree: () => void; onAddToCalendar: () => void;
+function MedicineCard({ m, stock, shortage, alternatives, altStock, onShowAlternative, showStock, tracked, onGetFree, onAddToCalendar }: {
+  m: Medicine; stock: EnrichedPharmacy[]; shortage: boolean; alternatives: Medicine[]; altStock: (alt: Medicine) => EnrichedPharmacy[];
+  onShowAlternative: (alt: Medicine) => void; showStock: boolean; tracked: boolean; onGetFree: () => void; onAddToCalendar: () => void;
 }) {
   const free = isFreeMedicine(m);
   const price = patientPrice(m);
@@ -101,7 +107,33 @@ function MedicineCard({ m, stock, showStock, tracked, onGetFree, onAddToCalendar
         </div>
       </div>
 
-      {(showStock || free) && (
+      {shortage && (
+        <div className="mt-4 space-y-3 rounded-xl border-2 border-destructive bg-card p-4" role="alert">
+          <p className="flex items-start gap-2 text-lg font-bold text-destructive">
+            <AlertTriangle className="mt-0.5 h-6 w-6 shrink-0" /> Ushbu dori yaqin dorixonalarda vaqtincha tugagan
+          </p>
+          {alternatives.length > 0 ? (
+            <div className="space-y-2">
+              <p className="text-lg font-semibold">O'rinbosar dori tavsiyasi — xuddi shu XPN ({m.generic_name_xpn}), 0 SO'M:</p>
+              <ul className="space-y-2">
+                {alternatives.map((alt) => (
+                  <li key={alt.id} className="flex flex-col gap-3 rounded-xl bg-secondary p-3 sm:flex-row sm:items-center">
+                    <div className="flex-1">
+                      <p className="text-xl font-bold">{alt.brand_name} <span className="text-base font-medium text-muted-foreground">{alt.strength} · {alt.manufacturer}</span></p>
+                      <p className="text-base">{altStock(alt).length} ta hamkor dorixonada bor · <strong className="text-success">0 SO'M</strong></p>
+                    </div>
+                    <Button size="xl" variant="success" onClick={() => onShowAlternative(alt)}><MapPinned /> Xaritada ko'rish</Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p className="text-lg">Hozircha bepul o'rinbosar topilmadi. Shifokoringiz bilan maslahatlashing.</p>
+          )}
+        </div>
+      )}
+
+      {(showStock || free) && !shortage && (
         <div className="mt-4 rounded-xl bg-muted p-4">
           <p className="flex items-center gap-2 text-lg font-semibold"><Store className="h-5 w-5" />
             {stock.length > 0 ? `Hozir mavjud (${stock.length} ta ${free ? "hamkor " : ""}dorixonada):` : "Hozircha hech qayerda yo'q"}

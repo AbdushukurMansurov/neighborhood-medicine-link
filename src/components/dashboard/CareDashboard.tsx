@@ -7,7 +7,7 @@ import { useCareStore } from "@/lib/care-store";
 import { enrichPharmacy, pharmaciesWithStock, type Medicine } from "@/lib/pharmacy-data";
 import { MedicineChecker } from "./MedicineChecker";
 import { PharmacyFinder, type MapHighlight } from "./PharmacyFinder";
-import { PrescriptionCalendar, type PatientRx } from "./PrescriptionCalendar";
+import { PATIENT_RX_SELECT, PrescriptionCalendar, type PatientRx } from "./PrescriptionCalendar";
 
 const SECTIONS = [
   { id: "dorixonalar", n: 1, title: "Dorixona qidiruvchisi", hint: "Xarita, hudud va yaqin dorixonalar", icon: MapPin },
@@ -37,12 +37,20 @@ export function CareDashboard({ userId }: { userId: string }) {
       return data;
     },
   });
+  const { data: stock = [] } = useQuery({
+    queryKey: ["stock"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("pharmacy_stock").select("pharmacy_id, medicine_id, quantity");
+      if (error) throw error;
+      return data;
+    },
+  });
   const { data: prescriptions = [] } = useQuery({
     queryKey: ["rx", "patient", userId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("prescriptions")
-        .select("id, code, status, issued_at, expires_at, medicine_id, medicines(brand_name, generic_name_xpn)")
+        .select(PATIENT_RX_SELECT)
         .eq("patient_id", userId)
         .order("issued_at", { ascending: false });
       if (error) throw error;
@@ -53,7 +61,7 @@ export function CareDashboard({ userId }: { userId: string }) {
   const pharmacies = useMemo(() => rawPharmacies.map(enrichPharmacy), [rawPharmacies]);
 
   function showFreePharmacies(m: Medicine) {
-    const ids = pharmaciesWithStock(m, pharmacies).map((p) => p.id);
+    const ids = pharmaciesWithStock(m, pharmacies, stock).map((p) => p.id);
     if (ids.length === 0) {
       toast.error("Bu dori hozircha hamkor dorixonalarda yo'q");
       return;
@@ -98,6 +106,7 @@ export function CareDashboard({ userId }: { userId: string }) {
         <MedicineChecker
           medicines={medicines}
           pharmacies={pharmacies}
+          stock={stock}
           loading={medsLoading}
           onGetFree={showFreePharmacies}
           onAddToCalendar={addToCalendar}
