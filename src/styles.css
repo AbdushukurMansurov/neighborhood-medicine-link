@@ -208,5 +208,5 @@ html.large-mode :focus-visible { outline: 4px solid var(--accent); outline-offse
 @media print {
   body * { visibility: hidden !important; }
   .print-area, .print-area * { visibility: visible !important; }
-  .print-area { position: fixed; inset: 0; margin: 0; border: 2px solid #000; box-shadow: none; }
+  .print-area { position: fixed; inset: 0; margin: 0; border: 2px solid oklch(0 0 0); box-shadow: none; }
 }
