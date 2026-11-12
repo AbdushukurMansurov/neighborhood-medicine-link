@@ -4,14 +4,15 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { formatSom, patientPrice } from "@/lib/pharmacy-data";
 
 export const Route = createFileRoute("/medicines")({
   head: () => ({
     meta: [
-      { title: "Medicines & reimbursement — Shifo" },
-      { name: "description", content: "Browse medicines by brand and generic (XPN) name with reimbursement status." },
-      { property: "og:title", content: "Medicines & reimbursement — Shifo" },
-      { property: "og:description", content: "Browse medicines by brand and generic (XPN) name with reimbursement status." },
+      { title: "Dorilar va reimbursatsiya — Shifo" },
+      { name: "description", content: "Dorilarni savdo va XPN nomi bo'yicha qidiring: DTSJ qancha qoplashi va bemor qancha to'lashini ko'ring." },
+      { property: "og:title", content: "Dorilar va reimbursatsiya — Shifo" },
+      { property: "og:description", content: "Dorilarni savdo va XPN nomi bo'yicha qidiring: DTSJ qancha qoplashi va bemor qancha to'lashini ko'ring." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -36,9 +37,9 @@ function Medicines() {
   );
   return (
     <main className="mx-auto max-w-6xl px-4 py-12">
-      <h1 className="text-3xl font-semibold">Medicines</h1>
-      <Input className="mt-6 max-w-sm" placeholder="Search brand or generic name…" value={q} onChange={(e) => setQ(e.target.value)} />
-      {isLoading ? <p className="mt-6 text-muted-foreground">Loading…</p> : (
+      <h1 className="text-3xl font-semibold">Dorilar</h1>
+      <Input className="mt-6 max-w-sm" placeholder="Savdo nomi yoki XPN bo'yicha qidirish…" value={q} onChange={(e) => setQ(e.target.value)} />
+      {isLoading ? <p className="mt-6 text-muted-foreground">Yuklanmoqda…</p> : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((m) => (
             <div key={m.id} className="rounded-2xl border bg-card p-5">
@@ -48,11 +49,11 @@ function Medicines() {
                   <p className="text-sm text-muted-foreground">XPN: {m.generic_name_xpn}</p>
                 </div>
                 <Badge variant={reimb[m.reimbursement_status]}>
-                  {m.reimbursement_status === "none" ? "Not reimbursed" : `${m.reimbursement_percent}% reimbursed`}
+                  {m.reimbursement_status === "none" ? "Qoplanmaydi" : `DTSJ ${m.reimbursement_percent}% qoplaydi`}
                 </Badge>
               </div>
-              <p className="mt-3 text-sm">{[m.strength, m.dosage_form, m.manufacturer].filter(Boolean).join(" · ")}</p>
-              {m.price != null && <p className="mt-1 text-sm font-semibold">{Number(m.price).toLocaleString()} UZS</p>}
+              <p className="mt-3 text-sm">{[m.strength, m.dosage_form === "Tablet" ? "tabletka" : m.dosage_form, m.manufacturer].filter(Boolean).join(" · ")}</p>
+              {m.price != null && <p className="mt-1 text-sm font-semibold">{formatSom(patientPrice(m) ?? 0)} <span className="font-normal text-muted-foreground">(bemor to'laydi)</span></p>}
             </div>
           ))}
         </div>
