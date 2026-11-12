@@ -11,8 +11,9 @@ export type EnrichedPharmacy = Pharmacy & {
 };
 
 /*
- * Region, district, working hours and stock are not stored in the database yet,
- * so they live here as display data keyed by pharmacy / medicine name.
+ * Region, district and working hours are not stored in the database yet,
+ * so they live here as display data keyed by pharmacy name. Stock comes from
+ * the pharmacy_stock table.
  */
 const CITY_UZ: Record<string, { city: string; region: string }> = {
   Tashkent: { city: "Toshkent", region: "Toshkent shahri" },
@@ -25,15 +26,7 @@ const PHARMACY_EXTRAS: Record<string, { district: string; hours: string }> = {
   "Dori-Darmon #7": { district: "Shayxontohur tumani", hours: "Kecha-kunduz (24/7)" },
   "Green Cross": { district: "Samarqand shahri", hours: "Du–Sha 09:00 – 20:00" },
   "Shifo Apteka": { district: "Buxoro shahri", hours: "Har kuni 08:00 – 21:00" },
-};
-
-const STOCK_BY_BRAND: Record<string, string[]> = {
-  Panadol: ["Oxy Med Pharmacy", "Dori-Darmon #7", "Shifo Apteka", "Green Cross"],
-  Glucophage: ["Oxy Med Pharmacy", "Shifo Apteka"],
-  Concor: ["Dori-Darmon #7", "Shifo Apteka"],
-  Augmentin: ["Oxy Med Pharmacy", "Green Cross"],
-  Lipitor: ["Dori-Darmon #7", "Green Cross"],
-  Nurofen: ["Oxy Med Pharmacy", "Dori-Darmon #7", "Green Cross", "Shifo Apteka"],
+  "Arzon Apteka": { district: "Chilonzor tumani", hours: "Har kuni 08:00 – 23:00" },
 };
 
 export function enrichPharmacy(p: Pharmacy): EnrichedPharmacy {
@@ -60,11 +53,34 @@ export function formatSom(value: number) {
   return `${value.toLocaleString("ru-RU").replace(/,/g, " ")} so'm`;
 }
 
+export type StockRow = { pharmacy_id: string; medicine_id: string; quantity: number };
+
+/** Units of a medicine in one pharmacy (0 when there is no stock row). */
+export function stockAt(stock: StockRow[], pharmacyId: string, medicineId: string) {
+  return stock.find((s) => s.pharmacy_id === pharmacyId && s.medicine_id === medicineId)?.quantity ?? 0;
+}
+
 /** Pharmacies that currently stock a medicine. Free medicines are only handed out by DTSJ partners. */
-export function pharmaciesWithStock<T extends Pharmacy>(m: Medicine, pharmacies: T[]): T[] {
-  const names = STOCK_BY_BRAND[m.brand_name] ?? [];
+export function pharmaciesWithStock<T extends Pharmacy>(m: Medicine, pharmacies: T[], stock: StockRow[]): T[] {
   return pharmacies.filter(
-    (p) => names.includes(p.name) && (!isFreeMedicine(m) || p.is_dtsj_partner),
+    (p) => stockAt(stock, p.id, m.id) > 0 && (!isFreeMedicine(m) || p.is_dtsj_partner),
+  );
+}
+
+/** A reimbursed medicine that no (partner) pharmacy currently has. */
+export function isShortage(m: Medicine, pharmacies: Pharmacy[], stock: StockRow[]) {
+  return m.reimbursement_status !== "none" && pharmaciesWithStock(m, pharmacies, stock).length === 0;
+}
+
+/** Free substitutes with the same XPN (generic name) that partner pharmacies have right now. */
+export function freeAlternatives(m: Medicine, medicines: Medicine[], pharmacies: Pharmacy[], stock: StockRow[]) {
+  const xpn = m.generic_name_xpn.trim().toLowerCase();
+  return medicines.filter(
+    (alt) =>
+      alt.id !== m.id &&
+      alt.generic_name_xpn.trim().toLowerCase() === xpn &&
+      isFreeMedicine(alt) &&
+      pharmaciesWithStock(alt, pharmacies, stock).length > 0,
   );
 }
 

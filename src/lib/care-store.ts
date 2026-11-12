@@ -15,9 +15,10 @@ type CareState = {
   meds: TrackedMedicine[];
   intake: Record<string, string[]>;
   demoRx: DemoPrescription | null;
+  telegram: boolean;
 };
 
-const EMPTY: CareState = { meds: [], intake: {}, demoRx: null };
+const EMPTY: CareState = { meds: [], intake: {}, demoRx: null, telegram: false };
 
 /** Per-user medicine tracker kept in this browser (no table exists for intake logs yet). */
 export function useCareStore(userId: string) {
@@ -61,9 +62,11 @@ export function useCareStore(userId: string) {
 
   const setDemoRx = useCallback((demoRx: DemoPrescription | null) => setState((s) => ({ ...s, demoRx })), []);
 
+  const setTelegram = useCallback((telegram: boolean) => setState((s) => ({ ...s, telegram })), []);
+
   const isTracked = useCallback((id: string) => state.meds.some((m) => m.id === id), [state.meds]);
 
-  return { ...state, loaded, addMedicine, removeMedicine, toggleIntake, setDemoRx, isTracked };
+  return { ...state, loaded, addMedicine, removeMedicine, toggleIntake, setDemoRx, setTelegram, isTracked };
 }
 
 export type CareStore = ReturnType<typeof useCareStore>;
