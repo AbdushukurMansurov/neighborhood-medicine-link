@@ -28,3 +28,14 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Roles live in `public.user_roles` (enum patient/doctor/pharmacist), assigned by the `handle_new_user` signup trigger; check them with `has_role()` in RLS — never trust client state for privileges.
+- Prescription code (12 digits) and `expires_at` (issued + 7 days) are set by DB triggers and are immutable on update; clients never compute them.
+- The 4-digit SMS code lives in `prescription_sms` (readable only by the patient and issuing doctor); pharmacists dispense only through the `dispense_prescription` RPC, which checks the code and deducts 1 unit of `pharmacy_stock` atomically.
+- Per-pharmacy stock is the `pharmacy_stock` table; shortage and substitute logic (same XPN, free, in stock) lives in `src/lib/pharmacy-data.ts` as pure functions covered by tests.
+- Chronic diagnosis keys are stored in `medicines.covered_conditions` and labelled in `src/lib/conditions.ts`.
+- Pharmacy region/district/hours are display data in `src/lib/pharmacy-data.ts` because the schema has no columns for them.
+- Patient dashboard modules live in `src/components/dashboard/` and share state through `CareDashboard`; doctor and pharmacist panels live in `src/components/portals/` and `/dashboard` picks one by role.
+- Daily intake logs, demo prescriptions and the Telegram-reminder toggle are stored per user in browser localStorage (`src/lib/care-store.ts`) since no table exists for them.
+- Demo quick-login (`src/lib/demo-auth.ts`) signs in or signs up fixed demo accounts from the browser; it relies on auto-confirm email being on.
+- All UI copy is Uzbek; code identifiers stay English.
