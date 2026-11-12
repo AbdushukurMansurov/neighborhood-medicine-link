@@ -58,6 +58,10 @@
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
   --color-highlight: var(--highlight);
+  --color-telegram: var(--telegram);
+  --color-telegram-foreground: var(--telegram-foreground);
+  --color-telegram-soft: var(--telegram-soft);
+  --color-telegram-chat: var(--telegram-chat);
   --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --color-border: var(--border);
@@ -102,6 +106,10 @@
   --warning: oklch(0.8 0.15 75);
   --warning-foreground: oklch(0.22 0.05 60);
   --highlight: oklch(0.93 0.09 90);
+  --telegram: oklch(0.6 0.13 240);
+  --telegram-foreground: oklch(0.99 0 0);
+  --telegram-soft: oklch(0.95 0.03 240);
+  --telegram-chat: oklch(0.9 0.04 200);
   --border: oklch(0.9 0.015 120);
   --input: oklch(0.9 0.015 120);
   --ring: oklch(0.46 0.09 185);
@@ -182,4 +190,23 @@
 .animate-scan-line { animation: scan-line 1.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
   .pharmacy-pin--highlight, .animate-scan-line { animation: none; }
+}
+
+/* Kattalashtirilgan rejim (A+): larger type everywhere + stronger contrast for elderly / low-vision users */
+html.large-mode { font-size: 118.75%; }
+html.large-mode {
+  --muted-foreground: oklch(0.28 0.03 200);
+  --border: oklch(0.55 0.03 200);
+  --input: oklch(0.45 0.03 200);
+  --primary: oklch(0.38 0.1 185);
+  --success: oklch(0.38 0.12 155);
+}
+html.large-mode button, html.large-mode a { font-weight: 700; }
+html.large-mode :focus-visible { outline: 4px solid var(--accent); outline-offset: 2px; }
+
+/* Printable prescription slip: only the slip is printed */
+@media print {
+  body * { visibility: hidden !important; }
+  .print-area, .print-area * { visibility: visible !important; }
+  .print-area { position: fixed; inset: 0; margin: 0; border: 2px solid #000; box-shadow: none; }
 }
