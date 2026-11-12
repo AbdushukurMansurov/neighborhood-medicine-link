@@ -14,16 +14,285 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      medicines: {
+        Row: {
+          brand_name: string
+          covered_conditions: string[]
+          created_at: string
+          dosage_form: string | null
+          generic_name_xpn: string
+          id: string
+          manufacturer: string | null
+          price: number | null
+          reimbursement_percent: number
+          reimbursement_status: Database["public"]["Enums"]["reimbursement_status"]
+          strength: string | null
+        }
+        Insert: {
+          brand_name: string
+          covered_conditions?: string[]
+          created_at?: string
+          dosage_form?: string | null
+          generic_name_xpn: string
+          id?: string
+          manufacturer?: string | null
+          price?: number | null
+          reimbursement_percent?: number
+          reimbursement_status?: Database["public"]["Enums"]["reimbursement_status"]
+          strength?: string | null
+        }
+        Update: {
+          brand_name?: string
+          covered_conditions?: string[]
+          created_at?: string
+          dosage_form?: string | null
+          generic_name_xpn?: string
+          id?: string
+          manufacturer?: string | null
+          price?: number | null
+          reimbursement_percent?: number
+          reimbursement_status?: Database["public"]["Enums"]["reimbursement_status"]
+          strength?: string | null
+        }
+        Relationships: []
+      }
+      pharmacies: {
+        Row: {
+          address: string
+          city: string
+          created_at: string
+          id: string
+          is_dtsj_partner: boolean
+          latitude: number | null
+          longitude: number | null
+          name: string
+          owner_id: string | null
+          phone: string | null
+        }
+        Insert: {
+          address: string
+          city: string
+          created_at?: string
+          id?: string
+          is_dtsj_partner?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          owner_id?: string | null
+          phone?: string | null
+        }
+        Update: {
+          address?: string
+          city?: string
+          created_at?: string
+          id?: string
+          is_dtsj_partner?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          owner_id?: string | null
+          phone?: string | null
+        }
+        Relationships: []
+      }
+      pharmacy_stock: {
+        Row: {
+          medicine_id: string
+          pharmacy_id: string
+          quantity: number
+          updated_at: string
+        }
+        Insert: {
+          medicine_id: string
+          pharmacy_id: string
+          quantity?: number
+          updated_at?: string
+        }
+        Update: {
+          medicine_id?: string
+          pharmacy_id?: string
+          quantity?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_stock_medicine_id_fkey"
+            columns: ["medicine_id"]
+            isOneToOne: false
+            referencedRelation: "medicines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pharmacy_stock_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescription_sms: {
+        Row: {
+          created_at: string
+          prescription_id: string
+          sms_code: string
+        }
+        Insert: {
+          created_at?: string
+          prescription_id: string
+          sms_code: string
+        }
+        Update: {
+          created_at?: string
+          prescription_id?: string
+          sms_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescription_sms_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: true
+            referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescriptions: {
+        Row: {
+          code: string
+          created_at: string
+          diagnosis: string | null
+          dispensed_at: string | null
+          dispensed_by: string | null
+          doctor_id: string
+          dosage: string | null
+          expires_at: string
+          id: string
+          issued_at: string
+          medicine_id: string
+          notes: string | null
+          patient_id: string
+          pharmacy_id: string | null
+          quantity: number
+          status: Database["public"]["Enums"]["prescription_status"]
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          diagnosis?: string | null
+          dispensed_at?: string | null
+          dispensed_by?: string | null
+          doctor_id: string
+          dosage?: string | null
+          expires_at: string
+          id?: string
+          issued_at?: string
+          medicine_id: string
+          notes?: string | null
+          patient_id: string
+          pharmacy_id?: string | null
+          quantity?: number
+          status?: Database["public"]["Enums"]["prescription_status"]
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          diagnosis?: string | null
+          dispensed_at?: string | null
+          dispensed_by?: string | null
+          doctor_id?: string
+          dosage?: string | null
+          expires_at?: string
+          id?: string
+          issued_at?: string
+          medicine_id?: string
+          notes?: string | null
+          patient_id?: string
+          pharmacy_id?: string | null
+          quantity?: number
+          status?: Database["public"]["Enums"]["prescription_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescriptions_medicine_id_fkey"
+            columns: ["medicine_id"]
+            isOneToOne: false
+            referencedRelation: "medicines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescriptions_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      dispense_prescription: {
+        Args: { _code: string; _pharmacy_id: string; _sms_code: string }
+        Returns: Json
+      }
+      generate_prescription_code: { Args: never; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "patient" | "doctor" | "pharmacist"
+      prescription_status: "active" | "dispensed" | "cancelled"
+      reimbursement_status: "full" | "partial" | "none"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +419,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["patient", "doctor", "pharmacist"],
+      prescription_status: ["active", "dispensed", "cancelled"],
+      reimbursement_status: ["full", "partial", "none"],
+    },
   },
 } as const
